@@ -5,15 +5,6 @@
 /public/storage
 /storage/*.key
 /vendor
-/app
-/bootstrap
-/config
-/database
-/public
-/routes
-/resources
-/storage
-/tests
 .env
 .env.backup
 .env.production
