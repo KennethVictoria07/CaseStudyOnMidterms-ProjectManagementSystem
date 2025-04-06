@@ -10,6 +10,7 @@ import Navbar from "./components/Navbar";
 import PROJ from "../context/ProjectContext";
 import ProjectDetail from "./pages/ProjectDetail";
 import Dashboard from "./pages/Dashboard";
+import Register from "./pages/Register";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
               <Route path="/" element={<Dashboard />} />
               <Route path="/projects" element={<ProjectList />} />
               <Route path="/projects/:id" element={<ProjectDetail />} />
