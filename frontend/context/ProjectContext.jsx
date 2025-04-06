@@ -130,13 +130,14 @@ export default function PROJ({ children }) {
           type: "PROJECT",
           payload: { project: get.data.projects[0] },
         });
-
+        console.log(get.data);
         return true;
       }
+      console.log(get.data);
       dispatch({
         type: "FAIL_FETCH",
         payload: { error: "Unauthorized", status: 401 },
-      });
+      }); 
       return false;
     } catch (error) {
       console.log(error);
