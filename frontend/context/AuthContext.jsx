@@ -11,8 +11,10 @@ export default function AUTH({ children }) {
     userData: {},
     userToken: "",
     logInUser: {
+      name: "", 
       email: "",
       password: "",
+      password_confirmation: "", 
     },
   };
 
@@ -28,33 +30,39 @@ export default function AUTH({ children }) {
           ...state,
           loading: false,
         };
-
       case "SET_USER":
         return {
           ...state,
           userData: action.payload.user,
           userToken: action.payload.token,
         };
-
       case "CLEAR_USER":
         return {
           ...state,
           userData: {},
           userToken: "",
           logInUser: {
+            name: "",
             email: "",
             password: "",
+            password_confirmation: "",
           },
         };
-
       case "NOT_AUTHORIZED":
         return {
           ...state,
-          user_data: {},
-          token: "",
+          userData: {},
+          userToken: "",
           status: 401,
         };
-
+      case "ENTERING_NAME": 
+        return {
+          ...state,
+          logInUser: {
+            ...state.logInUser,
+            name: action.payload.name,
+          },
+        };
       case "ENTERING_EMAIL":
         return {
           ...state,
@@ -63,7 +71,6 @@ export default function AUTH({ children }) {
             email: action.payload.email,
           },
         };
-
       case "ENTERING_PASSWORD":
         return {
           ...state,
@@ -72,14 +79,20 @@ export default function AUTH({ children }) {
             password: action.payload.password,
           },
         };
-
+      case "ENTERING_PASSWORD_CONFIRM": 
+        return {
+          ...state,
+          logInUser: {
+            ...state.logInUser,
+            password_confirmation: action.payload.password_confirmation,
+          },
+        };
       case "SUCCESS_FETCH":
         return {
           ...state,
           error: "",
           status: action.payload.status,
         };
-
       case "FAIL_FETCH":
         return {
           ...state,
@@ -102,15 +115,12 @@ export default function AUTH({ children }) {
         password: state.logInUser.password,
       });
       
-      
       if (login.status === 200) {
         console.log(login.data);
-
         dispatch({
           type: "SET_USER",
           payload: { user: login.data.user, token: login.data.token },
         });
-        // due to asynchronous nature of states, we must store data on session storage for the program to run after reloading
         sessionStorage.setItem("token", login.data.token);
         sessionStorage.setItem("email", login.data.user.email);
         sessionStorage.setItem("name", login.data.user.name);
@@ -122,7 +132,6 @@ export default function AUTH({ children }) {
       return false;
     } catch (error) {
       console.log(error);
-      
       dispatch({
         type: "FAIL_FETCH",
         payload: { error: error.message, status: 500 },
@@ -172,6 +181,40 @@ export default function AUTH({ children }) {
     }
   };
 
+  const register = async () => {
+    dispatch({ type: "START_LOADING" });
+    try {
+      const registerResponse = await axios.post("http://127.0.0.1:8000/api/register", {
+        name: state.logInUser.name,
+        email: state.logInUser.email,
+        password: state.logInUser.password,
+        password_confirmation: state.logInUser.password_confirmation,
+      });
+
+      if (registerResponse.status === 201) {
+        console.log(registerResponse.data);
+        dispatch({
+          type: "CLEAR_USER", 
+        });
+        return true;
+      }
+      dispatch({
+        type: "FAIL_FETCH",
+        payload: { error: "Registration failed", status: registerResponse.status },
+      });
+      return false;
+    } catch (error) {
+      console.log(error);
+      dispatch({
+        type: "FAIL_FETCH",
+        payload: { error: error.response?.data?.message || "Registration error", status: error.response?.status || 500 },
+      });
+      return false;
+    } finally {
+      dispatch({ type: "FINISH_LOADING" });
+    }
+  };
+
   return (
     <context.Provider
       value={{
@@ -184,6 +227,7 @@ export default function AUTH({ children }) {
         dispatch,
         login,
         logout,
+        register, 
       }}
     >
       {children}
