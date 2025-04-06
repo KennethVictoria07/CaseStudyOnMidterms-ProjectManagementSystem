@@ -21,6 +21,15 @@ export default function ProjectList() {
   const PROJ = CONSUMEPROJ();
   const goTo = useNavigate();
 
+  const logout = async () => {
+    const logoutResult = await AUTH.logout();
+    if (logoutResult) {
+      goTo("/login");
+    } else {
+      alert(`ERROR: ${AUTH.error}`);
+    }
+  };
+
   const [method, setMethod] = useState("VIEWING");
 
   const statusIcon = (status) => {
@@ -136,7 +145,8 @@ export default function ProjectList() {
               )}
             </div>
             <p className="text-zinc-600 text-[.75rem]">Account</p>
-            <button className="bg-red-500 border border-red-400 hover:border-white">
+            <button className="bg-red-500 border border-red-400 hover:border-white"
+            onClick={logout}>
               Logout
             </button>
           </div>
