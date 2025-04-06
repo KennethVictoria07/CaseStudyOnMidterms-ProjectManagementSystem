@@ -10,7 +10,20 @@ class ProjectController extends Controller
 {
     public function index()
     {
-        return Project::all();
+        $projects = Project::with('user:id,name')->get();
+
+        $projectsWithUserName = $projects->map(function ($project) {
+            return [
+                'id' => $project->id,
+                'title' => $project->title,
+                'description' => $project->description,
+                'status' => $project->status,
+                'created_at' => $project->created_at,
+                'updated_at' => $project->updated_at,
+                'user_name' => $project->user->name,
+            ];
+        });
+        return response()->json(["projects" => $projectsWithUserName], 200);
     }
 
     public function store(Request $request)
@@ -33,9 +46,9 @@ class ProjectController extends Controller
     public function update(Request $request, Project $project)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
+            'title' => 'string|max:255',
             'description' => 'nullable|string',
-            'status' => 'required|in:pending,in_progress,completed',
+            'status' => 'in:pending,in_progress,completed',
         ]);
 
         $project->update($request->all());
