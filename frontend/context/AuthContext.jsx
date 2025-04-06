@@ -101,6 +101,8 @@ export default function AUTH({ children }) {
         email: state.logInUser.email,
         password: state.logInUser.password,
       });
+      
+      
       if (login.status === 200) {
         console.log(login.data);
 
@@ -119,6 +121,8 @@ export default function AUTH({ children }) {
       dispatch({ type: "NOT_AUTHORIZED" });
       return false;
     } catch (error) {
+      console.log(error);
+      
       dispatch({
         type: "FAIL_FETCH",
         payload: { error: error.message, status: 500 },
